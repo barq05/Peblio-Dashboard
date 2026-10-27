@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Peblio · لوحة التحكم</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" onload="initG()" async defer></script>
+<style>
+:root{--pri:#01539d;--acc:#f8c535;--bg:#f4efe7;--ink:#0b2349;--mute:#5d6b85;--line:#e6dccd;--card:#fffdf9;--bad:#ee4b3b;--ok:#2e9c61;--inp:#fff}
+:root[data-theme="dark"]{--bg:#0b1a33;--ink:#f4efe7;--mute:#a4b3cf;--line:#223d6b;--card:#112548;--pri:#2f7fc4;--inp:#0b1a33;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Cairo,Tahoma,Arial,sans-serif;line-height:1.6}
+button,input,select,textarea{font:inherit}
+input,select,textarea{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--inp);color:var(--ink);min-width:0;width:100%}
+input[type=checkbox]{width:auto}input[type=color]{padding:2px;height:38px;width:60px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.btn{background:var(--pri);color:#fff;border:0;padding:8px 16px;border-radius:10px;cursor:pointer;font-weight:600;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--pri);border:1px solid var(--pri)}
+.btn.bad{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+.btn.sm{padding:4px 10px;font-size:.85rem}
+.center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center}
+.box{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:36px 28px;max-width:400px;width:100%;position:relative;overflow:hidden}
+.box h1{margin:6px 0;font-size:2.2rem;font-weight:800}.box p{color:var(--mute)}
+#gbtn{display:flex;justify-content:center;margin-top:18px}
+.dots{display:flex;justify-content:center;gap:8px;margin-bottom:10px}.dots i{width:16px;height:16px;border-radius:50%}
+#shell{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{background:var(--ink);color:#fff;padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+aside .br{font-size:1.5rem;font-weight:800;padding:4px 10px 16px}
+aside button{display:block;width:100%;text-align:start;background:none;border:0;color:#cfd8ea;padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:2px}
+aside button:hover{background:rgba(255,255,255,.08)}
+aside button.on{background:var(--acc);color:#2a1f00;font-weight:600}
+main{padding:20px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.top h2{margin:0;font-size:1.5rem}
+.who{color:var(--mute);font-size:.9rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{background:var(--acc);color:#2a1f00;border-radius:99px;padding:0 12px;font-weight:600;font-size:.8rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.card h3{margin:0 0 10px;font-size:1.05rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.stat span{color:var(--mute);font-size:.85rem}.stat b{display:block;font-size:1.5rem;font-weight:800}
+.stat.m{background:var(--pri);border-color:var(--pri);color:#fff}.stat.m span{color:#cfe3f5}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}.row>*{flex:1 1 130px}.row>.btn,.row>label.btn,.row>input[type=checkbox]{flex:0 0 auto}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:right;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:600;white-space:nowrap}
+small{color:var(--mute)}
+.sb{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:14px}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.pimg{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.pimg img,.pimg .ph{width:84px;height:84px;object-fit:cover;border-radius:12px;background:var(--line);display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:.75rem}
+.lbl{font-size:.82rem;color:var(--mute);margin:6px 0 2px}
+#toast{position:fixed;bottom:20px;inset-inline-start:20px;background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:50}
+#toast.on{opacity:1}
+#side{background:linear-gradient(180deg,#0b2349,#0e3a6e)}
+.card,.stat,.sb{box-shadow:0 1px 2px rgba(11,35,73,.05),0 6px 16px rgba(11,35,73,.04)}
+main{max-width:1560px}
+.top{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 16px}
+tbody tr:hover{background:rgba(1,83,157,.04)}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,430px);gap:16px;align-items:start}
+.split.one{grid-template-columns:minmax(0,1fr)}
+.pv{position:sticky;top:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 6px 16px rgba(11,35,73,.06)}
+.pv iframe{width:100%;height:76vh;border:1px solid var(--line);border-radius:12px;background:#fff;display:block;margin:0 auto}
+.pv.m iframe{max-width:375px}
+@media (max-width:1150px){.split{grid-template-columns:1fr}.pv{position:static}.pv iframe{height:70vh}}
+.low{color:var(--bad);font-weight:600}
+@media (max-width:760px){#shell{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;gap:4px;overflow-x:auto;padding:10px}aside .br{display:none}aside button{width:auto;white-space:nowrap;margin:0}}
+</style>
+</head>
+<body>
+<div id="login" class="center"><div class="box"><div class="dots"><i style="background:#01539d"></i><i style="background:#2e9c61"></i><i style="background:#f8c535"></i><i style="background:#ee4b3b"></i></div><h1>Peblio</h1><p id="lm">سجّل الدخول بحساب جوجل المصرّح له للدخول إلى لوحة التحكم.</p><div id="gbtn"></div></div></div>
+<div id="denied" class="center" hidden><div class="box"><h1 style="color:var(--bad)">غير مصرّح</h1><p>انت مش معاك صلاحيات تدخل لوحة التحكم.</p><p dir="ltr" id="dem"></p><button class="btn" id="out0">تسجيل الخروج وتجربة حساب آخر</button></div></div>
+<div id="shell" hidden><aside id="side"></aside><main><div class="top"><h2 id="ttl"></h2><div class="who"><span id="who" dir="ltr"></span><span class="tag" id="rl"></span><button class="btn ghost sm" id="thb" aria-label="تبديل الوضع الغامق والفاتح">☾ غامق</button><button class="btn ghost sm" id="out1">خروج</button></div></div><div class="split one" id="split"><div id="main"></div><div class="pv" id="pvbox" hidden><div class="row"><b style="flex:1">معاينة مباشرة قبل النشر</b><button class="btn ghost sm" data-pvm="d">كمبيوتر</button><button class="btn ghost sm" data-pvm="m">موبايل</button></div><iframe id="pvf" title="معاينة الموقع"></iframe></div></div></main></div>
+<div id="toast" role="status"></div>
+<script>
+const API='PASTE_WEB_APP_URL_HERE';
+const CLIENT_ID='PASTE_GOOGLE_CLIENT_ID_HERE';
+const DS={brand:'Peblio',logo:'',hero:{title:'Peblio',sub:'ألوان جواش مصنوعة لكل من يحب الرسم. زاهية وثابتة وسهلة الاستخدام.',cta:'تسوّق الآن',img:'',blobs:true},colors:{pri:'#01539d',acc:'#f8c535',bg:'#f8f2ea',ink:'#0b2349'},features:[{t:'ألوان ثابتة',d:'صبغات عالية التركيز تدوم على الورق.'},{t:'شحن لكل المحافظات',d:'توصيل لحد باب البيت في أنحاء مصر.'},{t:'دفع مرن',d:'كاش عند الاستلام أو محفظة أو إنستاباي.'}],reviews:[],faq:[{q:'إزاي أعرف إن طلبي اتسجل؟',a:'هتظهر لك رسالة تأكيد برقم الطلب، وهنتواصل معاك على رقمك.'},{q:'إيه طرق الدفع المتاحة؟',a:'بتظهر في السلة حسب المتاح حاليًا.'},{q:'ينفع أستخدم كود خصم؟',a:'أيوه، اكتب الكود في السلة قبل تأكيد الطلب.'}],titles:{best:'الأكثر طلبًا',products:'كل المنتجات',reviews:'آراء عملائنا',faq:'أسئلة شائعة',support:'الدعم الفني'},footer:'ألوان جواش مصنوعة بحب',wa:'',order:['hero','features','best','products','reviews','faq','support'],hide:{}};
+const SECN={hero:'الواجهة الرئيسية',features:'المميزات',best:'الأكثر طلبًا',products:'كل المنتجات',reviews:'آراء العملاء',faq:'الأسئلة الشائعة',support:'الدعم الفني'};
+const ST=['جديد','تم الشحن','مكتمل','ملغي'],TS=['جديدة','جاري الحل','تم الحل'],RA={owner:'المالك',manager:'مدير',support:'دعم فني'};
+const TABS=[['ov','نظرة عامة','owner,manager,support'],['orders','الطلبات','owner,manager,support'],['prod','المنتجات','owner,manager'],['coup','الخصومات','owner,manager'],['pay','الدفع','owner,manager'],['tix','الدعم','owner,manager,support'],['cust','العملاء','owner,manager,support'],['site','محرر الموقع','owner'],['team','الفريق','owner']];
+let tok='',D=null,role='',tab='ov',dirty={},OQ='',pvT=0;
+const PVT=['site','prod','pay'];
+function sendPv(){clearTimeout(pvT);pvT=setTimeout(()=>{const f=$('pvf');if(f&&f.contentWindow&&D)f.contentWindow.postMessage({peblio:1,theme:TH,site:D.site,products:D.products,pay:D.pay.filter(x=>x.on)},location.origin)},120)}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>Number(n).toLocaleString('ar-EG'),fmt=n=>num(n)+' ج.م';
+const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2600)};
+const api=o=>fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({a:'admin',tok,...o})}).then(r=>r.json()).then(r=>{if(r.error==='auth'){alert('انتهت الجلسة. سجّل الدخول من جديد.');location.reload()}return r});
+let TH='light';try{TH=localStorage.getItem('peblio-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}catch(e){}
+const applyTh=()=>{document.documentElement.dataset.theme=TH;const b=$('thb');if(b)b.textContent=TH==='dark'?'☀ فاتح':'☾ غامق'};
+function initG(){google.accounts.id.initialize({client_id:CLIENT_ID,callback:cred,auto_select:false});google.accounts.id.renderButton($('gbtn'),{theme:'filled_blue',size:'large',shape:'pill',locale:'ar'})}
+function cred(r){
+  tok=r.credential;$('lm').textContent='جاري التحقق من الصلاحيات...';
+  api({op:'load'}).then(x=>{
+    if(x.error==='forbidden'){$('login').hidden=true;$('denied').hidden=false;$('dem').textContent=x.email;return}
+    if(x.error){$('lm').textContent=x.error;return}
+    D=x;role=x.role;D.site=fullSite(x.site);start();
+  }).catch(()=>{$('lm').textContent='تعذر الاتصال بالسيرفر. راجع رابط API.'});
+}
+const out=()=>{try{google.accounts.id.disableAutoSelect()}catch(e){}location.reload()};
+$('out0').onclick=out;$('out1').onclick=out;
+function fullSite(s){
+  const o={...DS,...s,hero:{...DS.hero,...s.hero},colors:{...DS.colors,...s.colors},titles:{...DS.titles,...s.titles},hide:{...s.hide}};
+  o.order=[...(s.order||DS.order)];DS.order.forEach(k=>{if(!o.order.includes(k))o.order.push(k)});return o;
+}
+function start(){
+  $('login').hidden=true;$('shell').hidden=false;$('who').textContent=D.email;$('rl').textContent=RA[role];
+  $('side').innerHTML='<div class="br">Peblio</div>'+TABS.filter(t=>t[2].split(',').includes(role)).map(t=>`<button data-tab="${t[0]}">${t[1]}</button>`).join('')+'<button data-open="1">فتح الموقع ↗</button>';
+  show('ov');
+}
+function show(t){
+  tab=t;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  const T=TABS.find(x=>x[0]===t);$('ttl').textContent=T[1];$('main').innerHTML=R[t]();
+  const pv=PVT.includes(t);$('pvbox').hidden=!pv;$('split').classList.toggle('one',!pv);
+  if(pv){if(!$('pvf').getAttribute('src'))$('pvf').src='index.html?preview=1';else sendPv()}
+}
+const sb=k=>`<div class="sb"><span id="dm">${dirty[k]?'فيه تغييرات لم تُنشر بعد (تظهر في المعاينة فقط)':'كل شيء منشور'}</span><span><button class="btn ghost" data-discard="${k}">تجاهل التغييرات</button> <button class="btn" data-save="${k}">نشر التغييرات</button></span></div>`;
+const fld=(l,path,v,x='')=>`<div><div class="lbl">${l}</div><input data-b="${path}" value="${esc(v)}" ${x}></div>`;
+const days=()=>{const a=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);a.push(d.toISOString().slice(0,10))}return a};
+const R={
+ ov(){
+  const O=D.orders,V=O.filter(o=>o[10]!=='ملغي'),rev=V.reduce((a,o)=>a+ +o[6],0),low=D.products.filter(p=>p.q<=5);
+  const v=days().map(d=>V.filter(o=>o[1]===d).reduce((a,o)=>a+ +o[6],0)),mx=Math.max(...v,1);
+  const bars=v.map((y,i)=>{const h=Math.round(y/mx*120);return `<rect x="${i*90+20}" y="${150-h}" width="50" height="${h}" rx="8" style="fill:${i===6?'#f8c535':'var(--pri)'}"><title>${fmt(y)}</title></rect><text x="${i*90+45}" y="172" text-anchor="middle" font-size="12" style="fill:var(--mute)">${days()[i].slice(5)}</text>`}).join('');
+  return `<div class="stats"><div class="stat m"><span>إجمالي المبيعات</span><b>${fmt(rev)}</b></div><div class="stat"><span>عدد الطلبات</span><b>${num(O.length)}</b></div><div class="stat"><span>متوسط الطلب</span><b>${fmt(V.length?Math.round(rev/V.length):0)}</b></div><div class="stat"><span>طلبات جديدة</span><b>${num(O.filter(o=>o[10]==='جديد').length)}</b></div><div class="stat"><span>رسائل دعم جديدة</span><b>${num(D.tickets.filter(t=>t[5]==='جديدة').length)}</b></div><div class="stat"><span>منتجات قاربت على النفاد</span><b>${num(low.length)}</b></div></div>
+  <div class="card"><h3>مبيعات آخر ٧ أيام</h3><div class="scroll"><svg viewBox="0 0 650 185" style="min-width:520px;width:100%" role="img" aria-label="مبيعات آخر ٧ أيام">${bars}</svg></div></div>
+  <div class="card"><h3>مخزون منخفض</h3>${low.length?low.map(p=>`<div>${esc(p.n)} <b class="low">${num(p.q)}</b></div>`).join(''):'<small>لا يوجد منتجات منخفضة المخزون.</small>'}</div>`;
+ },
+ orders(){return `<div class="row"><input id="oq" placeholder="ابحث بالاسم أو الموبايل أو رقم الطلب" value="${esc(OQ)}"><button class="btn ghost" data-csv="1">تنزيل CSV</button></div><div class="card scroll"><table><thead><tr><th>الرقم</th><th>التاريخ</th><th>العميل</th><th>المنتجات</th><th>الإجمالي</th><th>الدفع</th><th>الحالة</th></tr></thead><tbody id="ot">${ordRows()}</tbody></table></div>`},
+ prod(){return sb('products')+`<div class="row"><button class="btn" data-newp="1">+ منتج جديد</button></div><div class="pg">${D.products.map((p,i)=>`<div class="card"><div class="pimg">${p.img?`<img src="${esc(p.img)}" alt="">`:'<div class="ph">بدون صورة</div>'}<label class="btn ghost sm" style="cursor:pointer">رفع صورة<input type="file" accept="image/*" hidden data-up="${i}"></label></div>${fld('الاسم',`products.${i}.n`,p.n)}<div class="row"><div><div class="lbl">السعر</div><input type="number" min="0" data-num="1" data-b="products.${i}.p" value="${p.p}"></div><div><div class="lbl">الكمية</div><input type="number" min="0" data-num="1" data-b="products.${i}.q" value="${p.q}"></div><div><div class="lbl">خصم %</div><input type="number" min="0" max="90" data-num="1" data-b="products.${i}.sale" value="${p.sale||0}"></div></div>${fld('التفاصيل',`products.${i}.d`,p.d)}<div class="row" style="margin-top:8px"><label><input type="checkbox" data-chk="1" data-b="products.${i}.best" ${p.best?'checked':''}> الأكثر طلبًا</label><button class="btn bad sm" data-delp="${i}">حذف</button></div></div>`).join('')||'<small>لا توجد منتجات. أضف أول منتج.</small>'}</div>`},
+ coup(){return sb('coupons')+`<div class="row"><button class="btn" data-newc="1">+ كود خصم</button></div><div class="card">${D.coupons.map((c,i)=>`<div class="row">${fld('الكود',`coupons.${i}.code`,c.code,'style="text-transform:uppercase"')}<div><div class="lbl">النوع</div><select data-b="coupons.${i}.t"><option value="pct" ${c.t==='pct'?'selected':''}>نسبة %</option><option value="fix" ${c.t==='fix'?'selected':''}>مبلغ ثابت</option></select></div><div><div class="lbl">القيمة</div><input type="number" min="1" data-num="1" data-b="coupons.${i}.v" value="${c.v}"></div><small>استُخدم ${num(c.used||0)}</small><label><input type="checkbox" data-chk="1" data-b="coupons.${i}.on" ${c.on?'checked':''}> مفعّل</label><button class="btn bad sm" data-delc="${i}">حذف</button></div>`).join('')||'<small>لا توجد أكواد.</small>'}</div>`},
+ pay(){return sb('pay')+`<div class="row"><button class="btn" data-newpay="1">+ طريقة دفع</button></div><div class="card">${D.pay.map((x,i)=>`<div class="row">${fld('الاسم',`pay.${i}.n`,x.n)}${fld('بيانات التحويل',`pay.${i}.info`,x.info||'')}<label><input type="checkbox" data-chk="1" data-b="pay.${i}.on" ${x.on?'checked':''}> مفعّلة</label><button class="btn bad sm" data-delpay="${i}">حذف</button></div>`).join('')||'<small>أضف طريقة دفع واحدة على الأقل، وإلا مش هيقدر العملاء يكملوا الطلب.</small>'}</div>`},
+ tix(){return `<div class="card scroll"><table><thead><tr><th>التاريخ</th><th>العميل</th><th>الموبايل</th><th>الرسالة</th><th>الحالة</th></tr></thead><tbody>${D.tickets.slice().reverse().map(t=>`<tr><td>${esc(t[1])}</td><td>${esc(t[2])}</td><td>${esc(t[3])}</td><td style="min-width:200px">${esc(t[4])}</td><td><select data-ts="${esc(t[0])}">${TS.map(s=>`<option ${t[5]===s?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('')||'<tr><td colspan="5"><small>لا توجد رسائل.</small></td></tr>'}</tbody></table></div>`},
+ cust(){
+  const m={};D.orders.forEach(o=>{const k=o[3]||o[2];m[k]=m[k]||{n:o[2],p:o[3],c:o[4],k:0,s:0};m[k].k++;if(o[10]!=='ملغي')m[k].s+= +o[6]});
+  const L=Object.values(m).sort((a,b)=>b.s-a.s);
+  return `<div class="card scroll"><table><thead><tr><th>العميل</th><th>الموبايل</th><th>العنوان</th><th>الطلبات</th><th>إجمالي الشراء</th></tr></thead><tbody>${L.map(c=>`<tr><td>${esc(c.n)}${c.s>=1500?' <span class="tag">مميز</span>':''}</td><td>${esc(c.p)}</td><td>${esc(c.c)}</td><td>${num(c.k)}</td><td>${fmt(c.s)}</td></tr>`).join('')||'<tr><td colspan="5"><small>لا يوجد عملاء بعد.</small></td></tr>'}</tbody></table></div>`;
+ },
+ site(){
+  const s=D.site,col=(k,l)=>`<div><div class="lbl">${l}</div><input type="color" data-b="site.colors.${k}" value="${s.colors[k]}"></div>`;
+  const list=(k,a,b,la,lb)=>`<div class="card"><h3>${{features:'المميزات',reviews:'آراء العملاء',faq:'الأسئلة الشائعة'}[k]}</h3>${s[k].map((x,i)=>`<div class="row">${fld(la,`site.${k}.${i}.${a}`,x[a])}${fld(lb,`site.${k}.${i}.${b}`,x[b])}<button class="btn bad sm" data-ldel="${k}.${i}">حذف</button></div>`).join('')}<button class="btn ghost sm" data-ladd="${k}">+ إضافة</button></div>`;
+  const img=(path,l,v)=>`<div class="pimg">${v?`<img src="${esc(v)}" alt="">`:'<div class="ph">بدون</div>'}<div><div class="lbl">${l}</div><label class="btn ghost sm" style="cursor:pointer">رفع صورة<input type="file" accept="image/*" hidden data-upsite="${path}"></label> ${v?`<button class="btn bad sm" data-rmimg="${path}">إزالة</button>`:''}</div></div>`;
+  return sb('site')+`<div class="card"><h3>الهوية</h3><div class="row">${fld('اسم البراند','site.brand',s.brand)}${fld('رقم واتساب (بالكود الدولي)','site.wa',s.wa,'dir="ltr" placeholder="201000000000"')}${fld('نص الفوتر','site.footer',s.footer)}</div>${img('logo','اللوجو',s.logo)}<div class="row">${col('pri','اللون الأساسي')}${col('acc','لون التمييز')}${col('bg','الخلفية')}${col('ink','لون النص')}</div></div>
+  <div class="card"><h3>الواجهة الرئيسية</h3><div class="row">${fld('العنوان','site.hero.title',s.hero.title)}${fld('زر الدعوة','site.hero.cta',s.hero.cta)}</div>${fld('الوصف','site.hero.sub',s.hero.sub)}${img('hero.img','صورة الواجهة',s.hero.img)}<label><input type="checkbox" data-chk="1" data-b="site.hero.blobs" ${s.hero.blobs?'checked':''}> إظهار الدوائر الملونة المتحركة</label></div>
+  <div class="card"><h3>ترتيب الأقسام وإخفاؤها</h3>${s.order.map((k,i)=>`<div class="row"><b style="flex:1 1 160px">${SECN[k]}</b><button class="btn ghost sm" data-mv="${i},-1">▲</button><button class="btn ghost sm" data-mv="${i},1">▼</button><label><input type="checkbox" data-chk="1" data-b="site.hide.${k}" ${s.hide[k]?'checked':''}> إخفاء</label></div>`).join('')}</div>
+  <div class="card"><h3>عناوين الأقسام</h3><div class="row">${Object.keys(s.titles).map(k=>fld(SECN[k],`site.titles.${k}`,s.titles[k])).join('')}</div></div>${list('features','t','d','العنوان','الوصف')}${list('reviews','n','t','الاسم','الرأي')}${list('faq','q','a','السؤال','الإجابة')}`;
+ },
+ team(){return sb('team')+`<div class="card"><div class="row"><b dir="ltr" style="flex:2 1 200px">${esc(D.email)}</b><span class="tag" style="flex:0 0 auto">المالك</span></div>${D.team.map((t,i)=>`<div class="row">${fld('الإيميل',`team.${i}.email`,t.email,'dir="ltr"')}<div><div class="lbl">الرتبة</div><select data-b="team.${i}.role"><option value="manager" ${t.role==='manager'?'selected':''}>مدير (منتجات وطلبات وخصومات ودفع)</option><option value="support" ${t.role==='support'?'selected':''}>دعم فني (طلبات ورسائل)</option></select></div><button class="btn bad sm" data-delt="${i}">حذف</button></div>`).join('')}<button class="btn ghost sm" data-newt="1">+ إضافة عضو</button><p><small>العضو لازم يسجل بحساب جوجل بنفس الإيميل. المالك فقط يعدّل الموقع والفريق.</small></p></div>`}
+};
+function ordRows(){
+  const q=OQ.trim();
+  const L=D.orders.filter(o=>!q||o.slice(0,4).join(' ').includes(q)).reverse();
+  return L.map(o=>`<tr><td>#${esc(o[0])}</td><td>${esc(o[1])}</td><td>${esc(o[2])}<br><small>${esc(o[3])} · ${esc(o[4])}</small></td><td style="min-width:180px">${esc(o[5])}</td><td>${fmt(o[6])}${+o[7]?`<br><small>خصم ${fmt(o[7])} ${esc(o[8])}</small>`:''}</td><td>${esc(o[9])}</td><td><select data-os="${esc(o[0])}">${ST.map(s=>`<option ${o[10]===s?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('')||'<tr><td colspan="7"><small>لا توجد طلبات.</small></td></tr>';
+}
+function setPath(path,val){
+  const p=path.split('.');let o=D;for(let i=0;i<p.length-1;i++)o=o[p[i]];o[p[p.length-1]]=val;dirty[p[0]]=1;const d=$('dm');if(d)d.textContent='فيه تغييرات لم تُنشر بعد (تظهر في المعاينة فقط)';sendPv();
+}
+const shrink=f=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);r(c.toDataURL('image/jpeg',.85).split(',')[1])};im.onerror=()=>r('');im.src=fr.result};fr.onerror=()=>r('');fr.readAsDataURL(f)});
+function upload(f){toast('جاري رفع الصورة...');return shrink(f).then(b=>b?api({op:'upload',data:b}):{error:'ملف الصورة غير صالح'}).then(r=>{if(r.error){toast(r.error);return ''}toast('تم رفع الصورة. شوفها في المعاينة ثم اضغط نشر.');return r.url})}
+function csv(){
+  const h=['رقم الطلب','التاريخ','الاسم','الموبايل','العنوان','المنتجات','الإجمالي','الخصم','الكود','الدفع','الحالة'];
+  const rows=D.orders.map(o=>o.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+h.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'}));a.download='peblio-orders.csv';a.click();
+}
+document.addEventListener('input',e=>{
+  const t=e.target;if(t.id==='oq'){OQ=t.value;$('ot').innerHTML=ordRows();return}
+  if(!t.dataset.b||t.dataset.chk||t.tagName==='SELECT')return;
+  setPath(t.dataset.b,t.dataset.num?(+t.value||0):(t.dataset.b.endsWith('.code')?t.value.toUpperCase():t.value));
+});
+document.addEventListener('change',e=>{
+  const t=e.target,d=t.dataset;
+  if(d.b&&(d.chk||t.tagName==='SELECT'))setPath(d.b,d.chk?t.checked:t.value);
+  if(d.os)api({op:'orderstatus',id:d.os,status:t.value}).then(r=>{if(r.error){toast(r.error);return}D.orders.find(o=>String(o[0])===d.os)[10]=t.value;toast('تم تحديث حالة الطلب')});
+  if(d.ts)api({op:'ticketstatus',id:d.ts,status:t.value}).then(r=>{if(r.error){toast(r.error);return}D.tickets.find(o=>String(o[0])===d.ts)[5]=t.value;toast('تم تحديث الحالة')});
+  if(d.up!==undefined&&t.files[0])upload(t.files[0]).then(u=>{if(u){D.products[+d.up].img=u;dirty.products=1;show('prod')}});
+  if(d.upsite&&t.files[0])upload(t.files[0]).then(u=>{if(u){setPath('site.'+d.upsite,u);show('site')}});
+});
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+  if(d.tab)show(d.tab);
+  if(d.open)window.open('index.html','_blank');
+  if(d.pvm)$('pvbox').classList.toggle('m',d.pvm==='m');
+  if(d.discard){const k=d.discard;api({op:'load'}).then(x=>{if(x.error){toast(x.error);return}D[k]=k==='site'?fullSite(x.site):x[k];delete dirty[k];show(tab);toast('تم تجاهل التغييرات')})}
+  if(d.csv)csv();
+  if(d.newp){D.products.unshift({id:Date.now(),n:'منتج جديد',p:0,q:0,d:'',sale:0,best:false,img:''});dirty.products=1;show('prod')}
+  if(d.delp&&confirm('حذف المنتج؟')){D.products.splice(+d.delp,1);dirty.products=1;show('prod')}
+  if(d.newc){D.coupons.push({id:Date.now(),code:'NEW10',t:'pct',v:10,on:true,used:0});dirty.coupons=1;show('coup')}
+  if(d.delc&&confirm('حذف الكود؟')){D.coupons.splice(+d.delc,1);dirty.coupons=1;show('coup')}
+  if(d.newpay){D.pay.push({id:Date.now(),n:'طريقة جديدة',info:'',on:true});dirty.pay=1;show('pay')}
+  if(d.delpay&&confirm('حذف طريقة الدفع؟')){D.pay.splice(+d.delpay,1);dirty.pay=1;show('pay')}
+  if(d.newt){D.team.push({email:'',role:'support'});dirty.team=1;show('team')}
+  if(d.delt&&confirm('حذف العضو؟')){D.team.splice(+d.delt,1);dirty.team=1;show('team')}
+  if(d.mv){const [i,s]=d.mv.split(',').map(Number),a=D.site.order,j=i+s;if(j>=0&&j<a.length){[a[i],a[j]]=[a[j],a[i]];dirty.site=1;show('site')}}
+  if(d.ladd){D.site[d.ladd].push(d.ladd==='features'?{t:'',d:''}:d.ladd==='reviews'?{n:'',t:''}:{q:'',a:''});dirty.site=1;show('site')}
+  if(d.ldel){const [k,i]=d.ldel.split('.');D.site[k].splice(+i,1);dirty.site=1;show('site')}
+  if(d.rmimg){setPath('site.'+d.rmimg,'');show('site')}
+  if(d.save){
+    const k=d.save;let v=D[k];
+    if(k==='team'){v=v.filter(x=>/^\S+@\S+\.\S+$/.test(x.email)).map(x=>({email:x.email.trim().toLowerCase(),role:x.role}))}
+    t.disabled=true;
+    api({op:k,value:v}).then(r=>{t.disabled=false;if(r.error){toast(r.error);return}delete dirty[k];const m=$('dm');if(m)m.textContent='كل شيء منشور';toast('تم النشر على الموقع')}).catch(()=>{t.disabled=false;toast('تعذر الحفظ. حاول مرة أخرى.')});
+  }
+});
+$('pvf').addEventListener('load',sendPv);
+applyTh();$('thb').onclick=()=>{TH=TH==='dark'?'light':'dark';try{localStorage.setItem('peblio-theme',TH)}catch(e){}applyTh();sendPv()};
+window.addEventListener('beforeunload',e=>{if(Object.keys(dirty).length){e.preventDefault();e.returnValue=''}});
+</script>
+</body>
+</html>
