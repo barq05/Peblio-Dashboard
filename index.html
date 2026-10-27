@@ -63,10 +63,11 @@ main{max-width:1560px}
 tbody tr:hover{background:rgba(1,83,157,.04)}
 .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,430px);gap:16px;align-items:start}
 .split.one{grid-template-columns:minmax(0,1fr)}
-.pv{position:sticky;top:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 6px 16px rgba(11,35,73,.06)}
-.pv iframe{width:100%;height:76vh;border:1px solid var(--line);border-radius:12px;background:#fff;display:block;margin:0 auto}
-.pv.m iframe{max-width:375px}
-@media (max-width:1150px){.split{grid-template-columns:1fr}.pv{position:static}.pv iframe{height:70vh}}
+.pvm{position:fixed;inset:0;z-index:40;background:rgba(11,35,73,.6);display:flex;align-items:center;justify-content:center;padding:12px}
+.pvm .pb{background:var(--card);border:1px solid var(--line);border-radius:16px;width:min(1100px,100%);height:min(94vh,100%);display:flex;flex-direction:column;gap:10px;padding:12px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.pvm .pb iframe{flex:1;min-height:0;width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;display:block;margin:0 auto}
+.pvm.m .pb iframe{max-width:375px}
+.pvm .pb .row{align-items:center}
 .low{color:var(--bad);font-weight:600}
 @media (max-width:760px){#shell{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;gap:4px;overflow-x:auto;padding:10px}aside .br{display:none}aside button{width:auto;white-space:nowrap;margin:0}}
 </style>
@@ -74,18 +75,20 @@ tbody tr:hover{background:rgba(1,83,157,.04)}
 <body>
 <div id="login" class="center"><div class="box"><div class="dots"><i style="background:#01539d"></i><i style="background:#2e9c61"></i><i style="background:#f8c535"></i><i style="background:#ee4b3b"></i></div><h1>Peblio</h1><p id="lm">سجّل الدخول بحساب جوجل المصرّح له للدخول إلى لوحة التحكم.</p><div id="gbtn"></div></div></div>
 <div id="denied" class="center" hidden><div class="box"><h1 style="color:var(--bad)">غير مصرّح</h1><p>انت مش معاك صلاحيات تدخل لوحة التحكم.</p><p dir="ltr" id="dem"></p><button class="btn" id="out0">تسجيل الخروج وتجربة حساب آخر</button></div></div>
-<div id="shell" hidden><aside id="side"></aside><main><div class="top"><h2 id="ttl"></h2><div class="who"><span id="who" dir="ltr"></span><span class="tag" id="rl"></span><button class="btn ghost sm" id="thb" aria-label="تبديل الوضع الغامق والفاتح">☾ غامق</button><button class="btn ghost sm" id="out1">خروج</button></div></div><div class="split one" id="split"><div id="main"></div><div class="pv" id="pvbox" hidden><div class="row"><b style="flex:1">معاينة مباشرة قبل النشر</b><button class="btn ghost sm" data-pvm="d">كمبيوتر</button><button class="btn ghost sm" data-pvm="m">موبايل</button></div><iframe id="pvf" title="معاينة الموقع"></iframe></div></div></main></div>
+<div id="shell" hidden><aside id="side"></aside><main><div class="top"><h2 id="ttl"></h2><div class="who"><span id="who" dir="ltr"></span><span class="tag" id="rl"></span><button class="btn ghost sm" id="thb" aria-label="تبديل الوضع الغامق والفاتح">☾ غامق</button><button class="btn ghost sm" id="out1">خروج</button></div></div><div class="split one" id="split"><div id="main"></div></div></main></div>
+<div class="pvm" id="pvm" hidden><div class="pb"><div class="row"><b style="flex:1">معاينة التعديلات قبل النشر</b><button class="btn ghost sm" data-pvm="d">كمبيوتر</button><button class="btn ghost sm" data-pvm="m">موبايل</button></div><iframe id="pvf" title="معاينة الموقع"></iframe><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-pvx="1">رجوع للتعديل</button><button class="btn" data-pvok="1">تأكيد النشر</button></div></div></div>
 <div id="toast" role="status"></div>
 <script>
-const API='https://script.google.com/macros/s/AKfycbySlCCiQC5dXY-pGcD68cnuTs2-DmhVqCa7GzkmF8Mam5TazxoqYGoCYznEJf253Mo6dw/exec';
-const CLIENT_ID='696445643285-b2iv2op4g3mli0kknkbc3kkvborlvvvk.apps.googleusercontent.com';
+const API='PASTE_WEB_APP_URL_HERE';
+const CLIENT_ID='PASTE_GOOGLE_CLIENT_ID_HERE';
+const SITE='https://barq05.github.io/Peblio/';
 const DS={brand:'Peblio',logo:'',hero:{title:'Peblio',sub:'ألوان جواش مصنوعة لكل من يحب الرسم. زاهية وثابتة وسهلة الاستخدام.',cta:'تسوّق الآن',img:'',blobs:true},colors:{pri:'#01539d',acc:'#f8c535',bg:'#f8f2ea',ink:'#0b2349'},features:[{t:'ألوان ثابتة',d:'صبغات عالية التركيز تدوم على الورق.'},{t:'شحن لكل المحافظات',d:'توصيل لحد باب البيت في أنحاء مصر.'},{t:'دفع مرن',d:'كاش عند الاستلام أو محفظة أو إنستاباي.'}],reviews:[],jobs:[],faq:[{q:'إزاي أعرف إن طلبي اتسجل؟',a:'هتظهر لك رسالة تأكيد برقم الطلب، وهنتواصل معاك على رقمك.'},{q:'إيه طرق الدفع المتاحة؟',a:'بتظهر في السلة حسب المتاح حاليًا.'},{q:'ينفع أستخدم كود خصم؟',a:'أيوه، اكتب الكود في السلة قبل تأكيد الطلب.'}],titles:{best:'الأكثر طلبًا',products:'كل المنتجات',reviews:'آراء عملائنا',faq:'أسئلة شائعة',support:'الدعم الفني',jobs:'انضم لفريقنا'},footer:'ألوان جواش مصنوعة بحب',wa:'',order:['hero','features','best','products','reviews','faq','jobs','support'],hide:{}};
 const SECN={hero:'الواجهة الرئيسية',features:'المميزات',best:'الأكثر طلبًا',products:'كل المنتجات',reviews:'آراء العملاء',faq:'الأسئلة الشائعة',jobs:'التقديم على العمل',support:'الدعم الفني'};
 const JST=['جديد','مقابلة','تم التعيين','مرفوض'],ST=['جديد','تم الشحن','مكتمل','ملغي'],TS=['جديدة','جاري الحل','تم الحل'],RA={owner:'المالك',manager:'مدير',support:'دعم فني'};
 const TABS=[['ov','نظرة عامة','owner,manager,support'],['orders','الطلبات','owner,manager,support'],['prod','المنتجات','owner,manager'],['coup','الخصومات','owner,manager'],['pay','الدفع','owner,manager'],['tix','الدعم','owner,manager,support'],['jobs','التوظيف','owner,manager'],['cust','العملاء','owner,manager,support'],['site','محرر الموقع','owner'],['team','الفريق','owner']];
 let tok='',D=null,role='',tab='ov',dirty={},OQ='',pvT=0;
 const PVT=['site','prod','pay'];
-function sendPv(){clearTimeout(pvT);pvT=setTimeout(()=>{const f=$('pvf');if(f&&f.contentWindow&&D)f.contentWindow.postMessage({peblio:1,theme:TH,site:D.site,products:D.products,pay:D.pay.filter(x=>x.on)},location.origin)},120)}
+function sendPv(){clearTimeout(pvT);pvT=setTimeout(()=>{const f=$('pvf');if(f&&f.contentWindow&&D&&!$('pvm').hidden)f.contentWindow.postMessage({peblio:1,theme:TH,site:D.site,products:D.products,pay:D.pay.filter(x=>x.on)},new URL(SITE).origin)},120)}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=n=>Number(n).toLocaleString('ar-EG'),fmt=n=>num(n)+' ج.م';
@@ -116,10 +119,8 @@ function start(){
 function show(t){
   tab=t;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   const T=TABS.find(x=>x[0]===t);$('ttl').textContent=T[1];$('main').innerHTML=R[t]();
-  const pv=PVT.includes(t);$('pvbox').hidden=!pv;$('split').classList.toggle('one',!pv);
-  if(pv){if(!$('pvf').getAttribute('src'))$('pvf').src='index.html?preview=1';else sendPv()}
 }
-const sb=k=>`<div class="sb"><span id="dm">${dirty[k]?'فيه تغييرات لم تُنشر بعد (تظهر في المعاينة فقط)':'كل شيء منشور'}</span><span><button class="btn ghost" data-discard="${k}">تجاهل التغييرات</button> <button class="btn" data-save="${k}">نشر التغييرات</button></span></div>`;
+const sb=k=>`<div class="sb"><span id="dm">${dirty[k]?'فيه تغييرات لم تُنشر بعد (اضغط نشر لمعاينتها وتأكيدها)':'كل شيء منشور'}</span><span><button class="btn ghost" data-discard="${k}">تجاهل التغييرات</button> <button class="btn" data-save="${k}">نشر التغييرات</button></span></div>`;
 const fld=(l,path,v,x='')=>`<div><div class="lbl">${l}</div><input data-b="${path}" value="${esc(v)}" ${x}></div>`;
 const days=()=>{const a=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);a.push(d.toISOString().slice(0,10))}return a};
 const R={
@@ -159,7 +160,7 @@ function ordRows(){
   return L.map(o=>`<tr><td>#${esc(o[0])}</td><td>${esc(o[1])}</td><td>${esc(o[2])}<br><small>${esc(o[3])} · ${esc(o[4])}</small></td><td style="min-width:180px">${esc(o[5])}</td><td>${fmt(o[6])}${+o[7]?`<br><small>خصم ${fmt(o[7])} ${esc(o[8])}</small>`:''}</td><td>${esc(o[9])}</td><td><select data-os="${esc(o[0])}">${ST.map(s=>`<option ${o[10]===s?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('')||'<tr><td colspan="7"><small>لا توجد طلبات.</small></td></tr>';
 }
 function setPath(path,val){
-  const p=path.split('.');let o=D;for(let i=0;i<p.length-1;i++)o=o[p[i]];o[p[p.length-1]]=val;dirty[p[0]]=1;const d=$('dm');if(d)d.textContent='فيه تغييرات لم تُنشر بعد (تظهر في المعاينة فقط)';sendPv();
+  const p=path.split('.');let o=D;for(let i=0;i<p.length-1;i++)o=o[p[i]];o[p[p.length-1]]=val;dirty[p[0]]=1;const d=$('dm');if(d)d.textContent='فيه تغييرات لم تُنشر بعد (اضغط نشر لمعاينتها وتأكيدها)';sendPv();
 }
 const shrink=f=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);r(c.toDataURL('image/jpeg',.85).split(',')[1])};im.onerror=()=>r('');im.src=fr.result};fr.onerror=()=>r('');fr.readAsDataURL(f)});
 function upload(f){toast('جاري رفع الصورة...');return shrink(f).then(b=>b?api({op:'upload',data:b}):{error:'ملف الصورة غير صالح'}).then(r=>{if(r.error){toast(r.error);return ''}toast('تم رفع الصورة. شوفها في المعاينة ثم اضغط نشر.');return r.url})}
@@ -185,8 +186,8 @@ document.addEventListener('change',e=>{
 document.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;const d=t.dataset;
   if(d.tab)show(d.tab);
-  if(d.open)window.open('index.html','_blank');
-  if(d.pvm)$('pvbox').classList.toggle('m',d.pvm==='m');
+  if(d.open)window.open(SITE,'_blank');
+  if(d.pvm)$('pvm').classList.toggle('m',d.pvm==='m');
   if(d.discard){const k=d.discard;api({op:'load'}).then(x=>{if(x.error){toast(x.error);return}D[k]=k==='site'?fullSite(x.site):x[k];delete dirty[k];show(tab);toast('تم تجاهل التغييرات')})}
   if(d.csv)csv();
   if(d.newp){D.products.unshift({id:Date.now(),n:'منتج جديد',p:0,q:0,d:'',sale:0,best:false,img:''});dirty.products=1;show('prod')}
@@ -201,13 +202,20 @@ document.addEventListener('click',e=>{
   if(d.ladd){D.site[d.ladd].push(d.ladd==='features'||d.ladd==='jobs'?{t:'',d:''}:d.ladd==='reviews'?{n:'',t:''}:{q:'',a:''});dirty.site=1;show('site')}
   if(d.ldel){const [k,i]=d.ldel.split('.');D.site[k].splice(+i,1);dirty.site=1;show('site')}
   if(d.rmimg){setPath('site.'+d.rmimg,'');show('site')}
-  if(d.save){
-    const k=d.save;let v=D[k];
-    if(k==='team'){v=v.filter(x=>/^\S+@\S+\.\S+$/.test(x.email)).map(x=>({email:x.email.trim().toLowerCase(),role:x.role}))}
-    t.disabled=true;
-    api({op:k,value:v}).then(r=>{t.disabled=false;if(r.error){toast(r.error);return}delete dirty[k];const m=$('dm');if(m)m.textContent='كل شيء منشور';toast('تم النشر على الموقع')}).catch(()=>{t.disabled=false;toast('تعذر الحفظ. حاول مرة أخرى.')});
-  }
+  if(d.save){if(PVT.includes(d.save))openPv(d.save);else publish(d.save,t)}
+  if(d.pvok)publish(PK,t,true);
+  if(d.pvx)closePv();
 });
+let PK='';
+function openPv(k){PK=k;$('pvm').hidden=false;document.body.style.overflow='hidden';const f=$('pvf');if(!f.getAttribute('src'))f.src=SITE+'?preview=1';else sendPv()}
+function closePv(){$('pvm').hidden=true;document.body.style.overflow='';PK=''}
+function publish(k,btn,fromPv){
+  if(!k)return;let v=D[k];
+  if(k==='team'){v=v.filter(x=>/^\S+@\S+\.\S+$/.test(x.email)).map(x=>({email:x.email.trim().toLowerCase(),role:x.role}))}
+  if(btn)btn.disabled=true;
+  return api({op:k,value:v}).then(r=>{if(btn)btn.disabled=false;if(r.error){toast(r.error);return}delete dirty[k];const m=$('dm');if(m)m.textContent='كل شيء منشور';if(fromPv)closePv();toast('تم النشر على الموقع')}).catch(()=>{if(btn)btn.disabled=false;toast('تعذر الحفظ. حاول مرة أخرى.')});
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('pvm').hidden)closePv()});
 $('pvf').addEventListener('load',sendPv);
 applyTh();$('thb').onclick=()=>{TH=TH==='dark'?'light':'dark';try{localStorage.setItem('peblio-theme',TH)}catch(e){}applyTh();sendPv()};
 window.addEventListener('beforeunload',e=>{if(Object.keys(dirty).length){e.preventDefault();e.returnValue=''}});
