@@ -93,19 +93,29 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=n=>Number(n).toLocaleString('ar-EG'),fmt=n=>num(n)+' ج.م';
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2600)};
-const api=o=>fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({a:'admin',tok,...o})}).then(r=>r.json()).then(r=>{if(r.error==='auth'){alert('انتهت الجلسة. سجّل الدخول من جديد.');location.reload()}return r});
+const api=o=>fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({a:'admin',tok,...o})}).then(r=>r.json()).then(r=>{if(r.error==='auth'){clearTok();alert('انتهت الجلسة. سجّل الدخول من جديد.');location.reload()}return r});
 let TH='light';try{TH=localStorage.getItem('peblio-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}catch(e){}
 const applyTh=()=>{document.documentElement.dataset.theme=TH;const b=$('thb');if(b)b.textContent=TH==='dark'?'☀ فاتح':'☾ غامق'};
-function initG(){google.accounts.id.initialize({client_id:CLIENT_ID,callback:cred,auto_select:false});google.accounts.id.renderButton($('gbtn'),{theme:'filled_blue',size:'large',shape:'pill',locale:'ar'})}
+const TK='peblio-tok';
+const jexp=t=>{try{return JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).exp*1000}catch(e){return 0}};
+const clearTok=()=>{try{sessionStorage.removeItem(TK)}catch(e){}};
+function initG(){
+  google.accounts.id.initialize({client_id:CLIENT_ID,callback:cred,auto_select:true});
+  let saved='';try{saved=sessionStorage.getItem(TK)||''}catch(e){}
+  if(saved&&jexp(saved)>Date.now()+60000){cred({credential:saved});return}
+  clearTok();
+  google.accounts.id.renderButton($('gbtn'),{theme:'filled_blue',size:'large',shape:'pill',locale:'ar'});
+  try{google.accounts.id.prompt()}catch(e){}
+}
 function cred(r){
-  tok=r.credential;$('lm').textContent='جاري التحقق من الصلاحيات...';
+  tok=r.credential;try{sessionStorage.setItem(TK,tok)}catch(e){}$('lm').textContent='جاري التحقق من الصلاحيات...';
   api({op:'load'}).then(x=>{
     if(x.error==='forbidden'){$('login').hidden=true;$('denied').hidden=false;$('dem').textContent=x.email;return}
     if(x.error){$('lm').textContent=x.error;return}
     D=x;role=x.role;D.site=fullSite(x.site);start();
   }).catch(()=>{$('lm').textContent='تعذر الاتصال بالسيرفر. راجع رابط API.'});
 }
-const out=()=>{try{google.accounts.id.disableAutoSelect()}catch(e){}location.reload()};
+const out=()=>{clearTok();try{google.accounts.id.disableAutoSelect()}catch(e){}location.reload()};
 $('out0').onclick=out;$('out1').onclick=out;
 function fullSite(s){
   const o={...DS,...s,hero:{...DS.hero,...s.hero},colors:{...DS.colors,...s.colors},titles:{...DS.titles,...s.titles},hide:{...s.hide}};
